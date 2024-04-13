@@ -11,6 +11,7 @@
   "author": "mohammed shas",
   "license": "ISC",
   "dependencies": {
+    "@reduxjs/toolkit": "^2.2.3",
     "@types/cookie-parser": "^1.4.7",
     "@types/mongoose": "^5.11.97",
     "@types/node": "^20.12.7",

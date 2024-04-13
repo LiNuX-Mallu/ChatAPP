@@ -1,6 +1,8 @@
 import { FormEvent, useState } from "react";
 import { useNavigate } from "react-router-dom"
 import axios from "../../instances/axios";
+import { useDispatch } from "react-redux";
+import { userIdAction, usernameAction } from "../../store/actions";
 
 interface Props {
     forLogin: boolean,
@@ -8,6 +10,7 @@ interface Props {
 
 export default function Form({forLogin}: Props) {
     const navigate = useNavigate();
+    const dispatch = useDispatch();
 
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
@@ -58,7 +61,9 @@ export default function Form({forLogin}: Props) {
             }
         }).then((res) => {
             if (res.status === 200) {
-                alert("Login success");
+                dispatch({type: userIdAction, payload: res.data?.userID ?? null});
+                dispatch({type: usernameAction, payload: res.data?.username ?? null});
+                navigate('/');
             }
         }).catch((err) => {
             if (err.response.status === 400) {
@@ -80,7 +85,7 @@ export default function Form({forLogin}: Props) {
             <h1 className="text-center text-slate-600 font-medium text-2xl">
                 {forLogin ? "Login" : "Signup Here"}
             </h1>
-            {error !== null && <p className="text-sm text-red-600 text-center font-medium">{error}</p>}
+            {error !== null && <p className="m-2 mt-5 text-sm text-red-600 text-center font-medium">{error}</p>}
             <form onSubmit={forLogin ? handleLogin : handleSignup} className="flex justify-between gap-5 items-center flex-col p-5 font-medium">
                 {forLogin ? 
                 <>
@@ -109,7 +114,7 @@ export default function Form({forLogin}: Props) {
                 </>}
 
                 <div className="mt-5 flex flex-col w-[100%] items-center justify-center">
-                    <button className="bg-blue-500 rounded-md pt-1 pb-1 w-[30%] text-white" type="submit">Signup</button>
+                    <button className="bg-blue-500 rounded-md pt-1 pb-1 w-[30%] text-white" type="submit">{forLogin ? 'Login' : 'Signup'}</button>
                 </div>
                 <div className="mt-2 flex flex-col w-[100%] items-center justify-center">
                     <p onClick={handlePage} className="font-medium text-sm text-blue-800 cursor-pointer">

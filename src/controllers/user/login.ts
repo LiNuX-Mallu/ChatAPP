@@ -15,16 +15,16 @@ export default async (req: Request, res: Response) => {
 
         const user = await checkLogin(username, pass);
         if (user) {
-            const token = jwt.sign({userID: user._id}, JWT_SECRET!, {
+            const token = await jwt.sign({userID: user.userID}, JWT_SECRET!, {
                 expiresIn: '7d',
             });
             res.cookie('token', token, {
                 httpOnly: true,
                 secure: true,
-                sameSite: 'strict',
+                sameSite: 'none',
                 maxAge: 7 * 24 * 60 * 60 * 1000,
             });
-            res.status(200).json({username});
+            res.status(200).json(user);
         } else {
             res.status(400).json({message: "Incorrect credentials"});
         }
