@@ -6,5 +6,12 @@ export interface Chat {
     messages: Message[];
     createdBy: {username: string};
     createdAt: Date;
+    members: [
+        {
+            memberID: string;
+            joinedOn: Date;
+            isAdmin: boolean;
+        }
+    ],
 }
 

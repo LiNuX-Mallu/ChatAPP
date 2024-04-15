@@ -1,21 +1,34 @@
 import { useEffect, useState } from "react";
 import Sidebar from "../../components/home/Sidebar";
 import { Chat } from "../../interfaces/Chat";
-import { chatDemos } from "./demos";
-import Navbar from "../../components/home/Navbar";
 import CreateChat from "../../components/home/CreateChat";
 import axios from "../../instances/axios";
 import { userIdAction, usernameAction } from "../../store/actions";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import ChatComponent from "../../components/chat/Chat";
+import Socket from "../../instances/socket";
+import { useSelector } from "react-redux";
+import { stateType } from "../../store/stateType";
 
 export default function Home() {
-    const [chats] = useState<Chat[]>(chatDemos);
-    const [selectedChat] = useState<string | null>(null);
+    const [chats, setChats] = useState<Chat[]>([]);
+    const [chatOpen, setChatOpen] = useState<string | null>(null);
     const [createChat, setCreateChat] = useState(false);
+    const [socket] = useState(Socket.connect());
+    const userID = useSelector((state: stateType) => state.userID);
     
     const dispatch = useDispatch();
     const navigate = useNavigate();
+
+    useEffect(() => {
+        axios.get('/chat')
+        .then((res) => {
+            if (res.status === 200) {
+                setChats(res.data);
+            }
+        });
+    }, [createChat]);
   
     useEffect(() => {
         axios.get('/user')
@@ -29,17 +42,30 @@ export default function Home() {
         })
     }, [dispatch, navigate]);
 
+    useEffect(() => {
+        if (socket && userID) {
+            socket.emit('joinApp', userID);
+        }
+        () => {
+            socket.emit('leaveApp', userID);
+        }
+    }, [socket, userID])
+
     return (
-        <div onClick={() => setCreateChat(false)} className={`h-[100vh] w-[100%] relative ${createChat ? 'backdrop-blur-md' : ''}`}>
-            <Navbar />
-            <div className="text-white select-none bg-slate-200 w-[100%] h-[90vh] overflow-scroll flex flew-row">
-                <Sidebar createChat={setCreateChat} chats={chats} />
-                <div className="flex-1 bg-gray-700 hidden md:flex">
-                    {selectedChat === null &&
+        <div onClick={() => setCreateChat(false)} className={`h-[100vh] w-[100%] ${createChat ? 'backdrop-blur-md' : ''}`}>
+            <div className="text-white select-none bg-slate-200 w-[100%] h-[100vh] overflow-scroll flex">
+
+                <div className={`${chatOpen !== null ? 'hidden': 'block'} md:block relative w-full h-[100vh] md:w-1/4 border-r-2 border-gray-600`}>
+                    <Sidebar selected={setChatOpen} createChat={setCreateChat} chats={chats} />
+                </div>
+                
+                <div className={`${chatOpen !== null ? 'flex' : 'hidden'} flex-1 bg-gray-700 md:flex relative`}>
+                    {chatOpen === null &&
                         <div className="flex w-full h-full justify-center items-center">
-                            <p className="text-gray-400 font-normal">Open a chat to visible here</p>
+                            <p className="text-gray-400 font-normal">Opened chat will visible here</p>
                         </div>
                     }
+                    {chatOpen !== null && <ChatComponent socket={socket} chatID={chatOpen} />}
                 </div>
             </div>
             {createChat && <CreateChat create={setCreateChat} />}

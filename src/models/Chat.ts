@@ -5,6 +5,10 @@ const chatSchema = new Schema({
         type: String,
         required: true,
     },
+    description: {
+        type: String,
+        required: false,
+    },
     messages: [
         {
             sender: {
@@ -28,11 +32,28 @@ const chatSchema = new Schema({
     createdBy: {
         type: Schema.Types.ObjectId,
         required: true,
+        ref: 'User'
     },
     createdAt: {
-        type: Schema.Types.ObjectId,
+        type: Date,
         required: true,
     },
+    members: [
+        {
+            memberID: {
+                type: Schema.Types.ObjectId,
+                ref: 'User',
+            },
+            joinedOn: {
+                type: Date,
+                required: true,
+            },
+            isAdmin: {
+                type: Boolean,
+                default: false,
+            }
+        }
+    ],
 });
 
 export default model('Chat', chatSchema);

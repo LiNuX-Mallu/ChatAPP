@@ -69,14 +69,21 @@ const io = new Server(server, {
 	allowEIO3: true,
 });
 
-//coket io logics
-io.on("connection", async (socket: Socket) => {
-	socket.on("joinApp", (username: string) => {
-		socket.join(username);
+//scoket io logics
+io.on("connection", (socket: Socket) => {
+	socket.on("joinApp", (id: string) => {
+		socket.join(id);
 	});
-	socket.on("leaveApp", (username: string) => {
-		socket.leave(username);
+	socket.on("leaveApp", (id: string) => {
+		socket.leave(id);
 	});
+
+	socket.on('joinChat', (id: string) => {
+		socket.join(id);
+	});
+	socket.on('leaveChat', (id: string) => {
+		socket.join(id);
+	})
 });
 
 //mongoDB and server connection
