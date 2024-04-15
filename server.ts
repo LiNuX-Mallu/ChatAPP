@@ -7,6 +7,8 @@ import router from "./router";
 import { Server, Socket } from "socket.io";
 import http from "http";
 import path from "path";
+import { Message } from "./src/interfaces/Message";
+import saveMessage from "./src/services/chat/saveMessage";
 
 //env variables
 dotenv.config();
@@ -71,19 +73,34 @@ const io = new Server(server, {
 
 //scoket io logics
 io.on("connection", (socket: Socket) => {
-	socket.on("joinApp", (id: string) => {
-		socket.join(id);
-	});
-	socket.on("leaveApp", (id: string) => {
-		socket.leave(id);
-	});
+	try {
+		socket.on("joinApp", (id: string) => {
+			if (!io.of("/").adapter.rooms.has(id)) {
+				socket.join(id);
+			}
+		});
+		socket.on("leaveApp", (id: string) => {
+			socket.leave(id);
+		});
 
-	socket.on('joinChat', (id: string) => {
-		socket.join(id);
-	});
-	socket.on('leaveChat', (id: string) => {
-		socket.join(id);
-	})
+		socket.on('joinChat', (id: string) => {
+			if (!io.of("/").adapter.rooms.has(id)) {
+				socket.join(id);
+			}
+		});
+		socket.on('leaveChat', (id: string) => {
+			socket.join(id);
+		});
+		
+		//send message
+		socket.on('sendMessage', (data: {chatID: string, message: Message}) => {
+			io.to(data.chatID).emit('receiveMessage', data.message);
+			saveMessage(data.chatID, data.message);
+		});
+
+	} catch(error) {
+		console.error(error);
+	}
 });
 
 //mongoDB and server connection

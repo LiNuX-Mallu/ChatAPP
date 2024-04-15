@@ -46,7 +46,7 @@ export default function Home() {
         if (socket && userID) {
             socket.emit('joinApp', userID);
         }
-        () => {
+        return () => {
             socket.emit('leaveApp', userID);
         }
     }, [socket, userID])
@@ -55,11 +55,11 @@ export default function Home() {
         <div onClick={() => setCreateChat(false)} className={`h-[100vh] w-[100%] ${createChat ? 'backdrop-blur-md' : ''}`}>
             <div className="text-white select-none bg-slate-200 w-[100%] h-[100vh] overflow-scroll flex">
 
-                <div className={`${chatOpen !== null ? 'hidden': 'block'} md:block relative w-full h-[100vh] md:w-1/4 border-r-2 border-gray-600`}>
+                <div className={`${chatOpen !== null ? 'hidden': 'block'} md:block relative w-full h-[100vh] md:w-1/3 border-r-2 border-gray-600`}>
                     <Sidebar selected={setChatOpen} createChat={setCreateChat} chats={chats} />
                 </div>
                 
-                <div className={`${chatOpen !== null ? 'flex' : 'hidden'} flex-1 bg-gray-700 md:flex relative`}>
+                <div className={`${chatOpen !== null ? 'block' : 'hidden'} w-full h-full bg-gray-700 md:block relative`}>
                     {chatOpen === null &&
                         <div className="flex w-full h-full justify-center items-center">
                             <p className="text-gray-400 font-normal">Opened chat will visible here</p>

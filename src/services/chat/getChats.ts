@@ -14,7 +14,7 @@ export default async (userID: string) => {
                 select: 'username',
             })
             .select({
-                'messages': {$slice: 1},
+                'messages': {$slice: [-1, 1]},
             });
         }));
     } catch (error) {

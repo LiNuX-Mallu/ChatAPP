@@ -12,8 +12,14 @@ const chatSchema = new Schema({
     messages: [
         {
             sender: {
-                type: Schema.Types.ObjectId,
-                required: true,
+                username: {
+                    type: String,
+                    required: true,
+                },
+                id: {
+                    type: Schema.Types.ObjectId,
+                    required: true,
+                }
             },
             messageType: {
                 type: String,
