@@ -28,18 +28,24 @@ export default function Chat({chatID, socket}: Props) {
 
     //fetching chat details based on chatID
     useEffect(() => {
+        setMessages([]);
         axios.get('/chat/get/'+chatID)
         .then((res) => {
             setChat(res.data);
             setMessages(res.data.messages);
-        })
+        });
+        return () => {
+            setMessages([]);
+        }
     }, [chatID]);
 
 
     //socket listeners and join chat
     useEffect(() => {
         function receiveMessage(message: Message) {
-            setNewMessage(message);
+            if (message.sender.id !== userID) {
+                setNewMessage(message);
+            }
         }
         if (socket && chat?._id) {
             socket.emit('joinChat', chat._id);
@@ -47,9 +53,9 @@ export default function Chat({chatID, socket}: Props) {
         }
         return () => {
             socket.emit('leaveChat', chat?._id);
-            socket.off('receiveMessage', receiveMessage)
+            socket.off('receiveMessage', receiveMessage);
         }
-    }, [socket, chat]);
+    }, [socket, chat, userID]);
 
     //handling new message
     useEffect(() => {
@@ -60,7 +66,6 @@ export default function Chat({chatID, socket}: Props) {
             return undefined;
         }
         setMessages([...messages, newMessage]);
-
     }, [messages, newMessage]);
 
     //send message handler
@@ -72,6 +77,7 @@ export default function Chat({chatID, socket}: Props) {
             timestamp: new Date(),
             messageType: 'text',
         }
+        setMessages([...messages, message]);
         socket.emit('sendMessage', {chatID: chat?._id, message});
         setInput("");
     }

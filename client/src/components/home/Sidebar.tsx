@@ -20,6 +20,8 @@ const colorPicker = (name: string, colors = color) => {
 
 export default function Sidebar({chats, createChat, selected}: Props) {
     const username = useSelector((state: stateType) => state.username);
+    const userID = useSelector((state: stateType) => state.userID);
+
     const [searchChats, setSearchChats] = useState<Chat[]>([]);
     const [search, setSearch] = useState("");
 
@@ -51,6 +53,21 @@ export default function Sidebar({chats, createChat, selected}: Props) {
             clearTimeout(timeout);
         }
     }, [search]);
+
+    const handleChatClick = (id: string) => {
+        const chatExist = chats.find(chat => chat._id === id);
+        if (chatExist) {
+            return selected(id);
+        }
+        const confirmed = window.confirm('Click ok to join this group');
+        if (confirmed) {
+            axios.post('/chat/join', {chatID: id, userID}, {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            }).then(() => selected(id));
+        }
+    }
 
     return (
         <div className="overflow-x-hidden overflow-y-scroll w-full h-full bg-gray-800">
@@ -84,7 +101,11 @@ export default function Sidebar({chats, createChat, selected}: Props) {
             <div className="p-16"></div>
             {(search.length === 0 ? chats : searchChats).map((chat) => {
                 return (
-                    <div onClick={() => selected(chat._id)} key={chat._id} className="flex flex-row p-5 ps-3 gap-2 border-r-4 border-r-transparent items-center hover:bg-gray-700 hover:border-r-4 hover:border-r-gray-300">
+                    <div
+                        onClick={() => handleChatClick(chat._id)}
+                        key={chat._id}
+                        className="flex flex-row p-5 ps-3 gap-2 border-r-4 border-r-transparent items-center hover:bg-gray-700 hover:border-r-4 hover:border-r-gray-300"
+                        >
                         <span style={{backgroundColor: colorPicker(chat.chatName)}} className="border w-10 h-10 rounded-full uppercase flex justify-center items-center text-center font-semibold">
                             {chat.chatName[0]}
                         </span>
