@@ -52,10 +52,10 @@ export default function Home() {
     }, [socket, userID])
 
     return (
-        <div onClick={() => setCreateChat(false)} className={`h-[100vh] w-[100%] ${createChat ? 'backdrop-blur-md' : ''}`}>
+        <div onClick={() => setCreateChat(false)} className={`h-[100vh] overflow-hidden w-[100%] ${createChat ? 'backdrop-blur-md' : ''}`}>
             <div className="text-white select-none bg-slate-200 w-[100%] h-[100vh] overflow-scroll flex">
 
-                <div className={`${chatOpen !== null ? 'hidden': 'block'} md:block relative w-full h-[100vh] md:w-1/3 border-r-2 border-gray-600`}>
+                <div className={`${chatOpen !== null ? 'hidden': 'block'} md:block relative overflow-hidden w-full h-[100vh] md:w-1/3 border-r-2 border-gray-600`}>
                     <Sidebar selected={setChatOpen} createChat={setCreateChat} chats={chats} />
                 </div>
                 

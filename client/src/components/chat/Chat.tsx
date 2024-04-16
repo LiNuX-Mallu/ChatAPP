@@ -83,10 +83,9 @@ export default function Chat({chatID, socket}: Props) {
     }
     
     return (
-        <div className="overflow-x-hidden overflow-y-scroll w-full h-full">
-
+        <div className="w-full h-full overflow-scroll">
             {/* topbar */}
-            <div className="bg-gray-800 ps-5 absolute h-16 left-0 right-0 top-0 flex flex-1 flex-row p-1 w-full items-center justify-between gap-2">
+            <div className="bg-gray-800 z-10 ps-5 absolute h-16 left-0 right-0 top-0 flex flex-1 flex-row p-1 w-full items-center justify-between gap-2">
                 <div className="flex items-center justify-between gap-2">
                     <span style={{backgroundColor: colorPicker(chat?.chatName ?? 'red')}} className="border w-8 h-8 rounded-full uppercase flex justify-center items-center text-center font-semibold">
                         {chat?.chatName[0] ?? ''}
@@ -96,35 +95,36 @@ export default function Chat({chatID, socket}: Props) {
                 <i className="fa-solid text-xl fa-ellipsis-vertical pe-4"></i>
             </div>
 
+            {/*profile space */}
+            {messages.length === 0 &&
+            <div className="flex pb-20 pt-20 flex-col absolute top-16 bottom-16 items-center justify-center bg-slate-700 w-full">
+                <div className="flex gap-2 h-full w-full flex-col items-center justify-center text-center">
+                    <span style={{backgroundColor: colorPicker(chat?.chatName ?? 'c2')}} className="border w-16 h-16 rounded-full uppercase flex justify-center items-center text-center font-semibold text-2xl">
+                        {chat?.chatName[0] ?? ''}
+                    </span>
+                    <span className="font-[Lexend]">{chat?.chatName ?? 'loading'}</span>
+                    <p className="font-medium text-sm text-gray-400">Chat create by {chat?.createdBy.username} on {chat ? new Date(chat?.createdAt).toDateString() : ''}</p>
+                </div>
+            </div>}
+
+
             {/* message space */}
-            <div className="flex flex-col items-center justify-center bg-slate-700 h-full w-full">
-                {messages.length === 0 &&
-                    <div className="flex gap-2 h-full w-full flex-col items-center justify-center text-center">
-                        <span style={{backgroundColor: colorPicker(chat?.chatName ?? 'c2')}} className="border w-16 h-16 rounded-full uppercase flex justify-center items-center text-center font-semibold text-2xl">
-                            {chat?.chatName[0] ?? ''}
-                        </span>
-                        <span className="font-[Lexend]">{chat?.chatName ?? 'loading'}</span>
-                        <p className="font-medium text-sm text-gray-400">Chat create by {chat?.createdBy.username} on {chat ? new Date(chat?.createdAt).toDateString() : ''}</p>
-                    </div>
-                }
-                
-                {messages.length > 0 &&
-                <div className="w-full h-full justify-end gap-2 flex p-5 pb-20 flex-col pt-32">
-                    {messages.map((message: Message) => {
-                        return (
-                            <div
-                                className={`bg-gray-900 flex rounded-md min-w-20 ${message.sender.id === userID ? 'self-end': 'self-start'}`}
-                                key={message.timestamp.toString()}
-                                >
-                                <p className="whitespace-pre w-full h-full text-center p-2 ps-4 pe-4 font-normal text-md">{message.message}</p>
-                            </div>
-                        )
-                    })}
-                </div>}
-            </div>
+            {messages.length !== 0 &&
+            <div className="w-full pb-20 pt-20 top-16 bottom-16 overflow-y-scroll justify-end gap-2 flex p-5 flex-col">
+                {messages.map((message: Message) => {
+                    return (
+                        <div
+                            className={`bg-gray-900 flex rounded-md min-w-20 ${message.sender.id === userID ? 'self-end': 'self-start'}`}
+                            key={message.timestamp.toString()}
+                            >
+                            <p className="whitespace-pre-wrap w-full h-full text-center p-2 ps-4 pe-4 font-[Lexend] text-sm">{message.message}</p>
+                        </div>
+                    )
+                })}
+            </div>}
 
             {/* typebox */}
-            <div className="bg-gray-800 ps-5 absolute h-14 left-0 right-0 bottom-0 flex flex-1 flex-row p-1 w-full items-center justify-between gap-2">
+            <div className="bg-gray-800 z-10 ps-5 absolute h-16 left-0 right-0 bottom-0 flex flex-1 flex-row p-1 w-full items-center justify-between gap-2">
                 <textarea
                     className="w-full resize-none bg-transparent outline-none flex items-center"
                     rows={1}
