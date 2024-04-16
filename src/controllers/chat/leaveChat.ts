@@ -6,7 +6,7 @@ export default async (req: Request, res: Response) => {
         const {userID} = req;
         const {chatID} = req.body;
 
-        const joined = await addMember(userID, chatID, false);
+        const joined = await addMember(userID, chatID, true);
 
         if (joined) {
             res.status(201).end();

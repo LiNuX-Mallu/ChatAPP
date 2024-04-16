@@ -28,7 +28,7 @@ export default function Home() {
                 setChats(res.data);
             }
         });
-    }, [createChat]);
+    }, [createChat, chatOpen]);
   
     useEffect(() => {
         axios.get('/user')
@@ -56,7 +56,7 @@ export default function Home() {
             <div className="text-white select-none bg-slate-200 w-[100%] h-[100vh] overflow-scroll flex">
 
                 <div className={`${chatOpen !== null ? 'hidden': 'block'} md:block relative overflow-hidden w-full h-[100vh] md:w-1/3 border-r-2 border-gray-600`}>
-                    <Sidebar selected={setChatOpen} createChat={setCreateChat} chats={chats} />
+                    <Sidebar setChats={setChats} selected={setChatOpen} createChat={setCreateChat} chats={chats} />
                 </div>
                 
                 <div className={`${chatOpen !== null ? 'block' : 'hidden'} w-full h-full bg-gray-700 md:block relative`}>
@@ -65,7 +65,7 @@ export default function Home() {
                             <p className="text-gray-400 font-normal">Opened chat will visible here</p>
                         </div>
                     }
-                    {chatOpen !== null && <ChatComponent socket={socket} chatID={chatOpen} />}
+                    {chatOpen !== null && <ChatComponent setChatOpen={setChatOpen} socket={socket} chatID={chatOpen} />}
                 </div>
             </div>
             {createChat && <CreateChat create={setCreateChat} />}

@@ -11,6 +11,7 @@ interface Props {
     chats: Chat[];
     createChat: React.Dispatch<React.SetStateAction<boolean>>;
     selected: React.Dispatch<React.SetStateAction<string | null>>;
+    setChats: React.Dispatch<React.SetStateAction<Chat[]>>;
 }
 
 const colorPicker = (name: string, colors = color) => {
@@ -18,12 +19,14 @@ const colorPicker = (name: string, colors = color) => {
     return colors[index];
 }
 
-export default function Sidebar({chats, createChat, selected}: Props) {
+export default function Sidebar({chats, createChat, selected, setChats}: Props) {
     const username = useSelector((state: stateType) => state.username);
     const userID = useSelector((state: stateType) => state.userID);
 
     const [searchChats, setSearchChats] = useState<Chat[]>([]);
     const [search, setSearch] = useState("");
+
+    const [showOptions, setShowOptions] = useState<string | null>(null);
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -69,10 +72,26 @@ export default function Sidebar({chats, createChat, selected}: Props) {
         }
     }
 
+    const handleLeaveChat = (id: string) => {
+        if (!userID) return undefined;
+        axios.post('/chat/leave', {chatID: id, userID}, {
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        }).then(() => {
+            const newChats = [...chats].filter((chat) => chat._id !== id);
+            setChats(newChats);
+            setShowOptions(null);
+        });
+    }
+
     return (
-        <div className="overflow-x-hidden overflow-y-scroll w-full h-full bg-gray-800">
+        <div onClick={(e) => {
+            e.stopPropagation();
+            showOptions && setShowOptions(null);
+        }} className="overflow-x-hidden overflow-y-scroll w-full h-full bg-gray-800">
             {/* topbar */}
-            <div className="bg-gray-800 absolute flex w-full flex-col p-1 items-center justify-between gap-5 pt-5 pb-2">
+            <div className="bg-gray-800 z-50 absolute flex w-full flex-col p-1 items-center justify-between gap-5 pt-5 pb-2">
 
                 {/* username and logout option */}
                 <div className="flex ps-2 pe-2 w-full justify-between items-center gap-1 font-medium cursor-pointer">
@@ -104,17 +123,45 @@ export default function Sidebar({chats, createChat, selected}: Props) {
                     <div
                         onClick={() => handleChatClick(chat._id)}
                         key={chat._id}
-                        className="flex flex-row p-5 ps-3 gap-2 border-r-4 border-r-transparent items-center hover:bg-gray-700 hover:border-r-4 hover:border-r-gray-300"
+                        className="flex relative flex-row p-5 ps-3 gap-2 border-r-4 border-r-transparent items-center hover:bg-gray-700 hover:border-r-4 hover:border-r-gray-300"
                         >
+
+                        {/* profile icon */}
                         <span style={{backgroundColor: colorPicker(chat.chatName)}} className="border w-10 h-10 rounded-full uppercase flex justify-center items-center text-center font-semibold">
                             {chat.chatName[0]}
                         </span>
-                        <div className="flex flex-col items-start text-left gap-1 justify-between">
+
+                        {/* chat name and detail */}
+                        <div className="flex flex-col items-start text-left gap-1">
                             <span className="capitalize font-[Lexend] text-sm text-gray-200">{chat.chatName}</span>
-                            <p className="text-xs text-gray-300 font-[Lexend]">Chat created by {chat.createdBy.username}</p>
+                            <p className="text-xs text-gray-300 font-normal">Chat created by {chat.createdBy.username}</p>
                         </div>
-                        <div className="flex-1 flex item-center flex-col justify-between gap-1 text-right">
-                            <i className="fa-solid text-md fa-ellipsis"></i>
+
+                        <div className="flex-1 flex item-center flex-col justify-between gap-0 text-right">
+
+                            {/* options */}
+                            {showOptions === chat._id &&
+                            <div
+                                className="right-10 z-10 gap-2 bg-slate-600 absolute text-center rounded-sm flex flex-col items-center justify-between"
+                                >
+                                {/* leave chat button */}
+                                <span onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleLeaveChat(chat._id);
+                                    }} 
+                                    className="text-gray-100 flex-1 w-full text-xs hover:bg-red-400 p-2 ps-3 pe-3"
+                                >Leave Chat</span>
+                            </div>}
+
+                            {/* option button */}
+                            <i onClick={(e) => {
+                                e.stopPropagation();
+                                if (showOptions === chat._id) {
+                                    setShowOptions(null);
+                                } else {
+                                    setShowOptions(chat._id);
+                                }
+                            }} className="fa-solid text-md fa-ellipsis w-min text-lg self-end"></i>
                             <span className="text-xs text-gray-400">{new Date(chat.createdAt).toDateString() ?? ''}</span>
                         </div>
                     </div>

@@ -9,6 +9,7 @@ import http from "http";
 import path from "path";
 import { Message } from "./src/interfaces/Message";
 import saveMessage from "./src/services/chat/saveMessage";
+import deleteMessage from "./src/services/chat/deleteMessage";
 
 //env variables
 dotenv.config();
@@ -97,6 +98,12 @@ io.on("connection", (socket: Socket) => {
 			io.to(data.chatID).emit('receiveMessage', data.message);
 			saveMessage(data.chatID, data.message);
 		});
+
+		//unsend message
+		socket.on('sendUnsend', (data: {chatID: string, timestamp: Date, userID: string}) => {
+			io.to(data.chatID).emit('receiveUnsend', {userID: data.userID, timestamp: data.timestamp});
+			deleteMessage(data.chatID, data.timestamp, data.userID);
+		})
 
 		//send typing status
 		socket.on('sendTyping', (data: {chatID: string, username: string, isTyping: boolean}) => {
