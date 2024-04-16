@@ -98,6 +98,11 @@ io.on("connection", (socket: Socket) => {
 			saveMessage(data.chatID, data.message);
 		});
 
+		//send typing status
+		socket.on('sendTyping', (data: {chatID: string, username: string, isTyping: boolean}) => {
+			io.to(data.chatID).emit('receiveTyping', {username: data.username, isTyping: data.isTyping});
+		});
+
 	} catch(error) {
 		console.error(error);
 	}

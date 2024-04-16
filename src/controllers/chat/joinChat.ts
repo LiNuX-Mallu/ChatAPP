@@ -11,7 +11,7 @@ export default async (req: Request, res: Response) => {
         if (joined) {
             res.status(201).end();
         } else {
-            throw new Error("Unknow error");
+            throw new Error("Unknown error");
         }
     } catch (error) {
         res.status(500).end();

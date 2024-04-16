@@ -4,7 +4,7 @@ import User from "../../models/User"
 export default async (userID: string, chatID: string) => {
     if (!chatID || !userID) return false;
     try {
-        const user = await User.findByIdAndUpdate(chatID, {
+        const user = await User.findByIdAndUpdate(userID, {
             $push: {chats: chatID},
         }, {new: true});
 
@@ -14,11 +14,15 @@ export default async (userID: string, chatID: string) => {
             isAdmin: false,
         }
 
-        await Chat.findByIdAndUpdate(chatID, {
+        const chat = await Chat.findByIdAndUpdate(chatID, {
             $push: {members: member},
         }, {new: true});
-        
-        return true;
+
+        if (chat && user) {
+            return true;
+        } else {
+            return false;
+        }
     } catch (error) {
         throw error;
     }
