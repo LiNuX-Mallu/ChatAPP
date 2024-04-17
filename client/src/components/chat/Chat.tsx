@@ -166,7 +166,7 @@ export default function Chat({chatID, socket, setChatOpen}: Props) {
             messageOption && setMessageOption(null);
         }} ref={chatRef} className="w-full h-full overflow-scroll">
             {/* topbar */}
-            <div className="bg-gray-800 z-10 ps-5 absolute h-16 left-0 right-0 top-0 flex flex-1 flex-row p-1 w-full items-center justify-between gap-2">
+            <div className="bg-gray-800 z-20 ps-5 absolute h-16 left-0 right-0 top-0 flex flex-1 flex-row p-1 w-full items-center justify-between gap-2">
                 <div className="flex items-center justify-between gap-2">
                     <i onClick={() => setChatOpen(null)} className="fa-solid fa-chevron-left text-lg text-gray-200 hover:text-white"></i>
                     <span style={{backgroundColor: colorPicker(chat?.chatName ?? 'red')}} className="border w-7 h-7 rounded-full uppercase flex justify-center items-center text-center font-semibold">
@@ -227,13 +227,13 @@ export default function Chat({chatID, socket, setChatOpen}: Props) {
 
                             {/* UI for online status */}
                             {message.sender?._id !== userID && (online[message.sender._id] && online[message.sender?._id] === true) &&
-                                <div className="absolute -top-2 -left-2 z-30 w-4 h-4 bg-green-500 border-2 rounded-full"></div>
+                                <div className="absolute z-10 -top-2 -left-2 w-4 h-4 bg-green-500 border-2 rounded-full"></div>
                             }
 
                             {/* avatar icon */}
                             {message.sender?._id !== userID &&
                             <div className={`relative overflow-hidden rounded-full uppercase h-8 w-8 flex justify-center items-center text-center font-semibold text-sm`}>
-                                <img className="avatar-image" src={'/avatars/'+message.sender?.avatar} alt="profile" />
+                                <img className="avatar-image" src={`/avatars/${message.sender.avatar}`} alt="profile" />
                             </div>
                             }
 
@@ -274,7 +274,7 @@ export default function Chat({chatID, socket, setChatOpen}: Props) {
             </div>}
 
             {/* typebox */}
-            <form onSubmit={sendMessage} className="bg-gray-800 border-t-2 border-slate-600 z-10 ps-5 absolute h-16 left-0 right-0 bottom-0 flex flex-1 flex-row p-1 w-full items-center justify-between gap-2">
+            <form onSubmit={sendMessage} className="bg-gray-800 border-t-2 border-slate-600 z-20 ps-5 absolute h-16 left-0 right-0 bottom-0 flex flex-1 flex-row p-1 w-full items-center justify-between gap-2">
                 <input
                     ref={inputRef}
                     className="w-full bg-transparent text-gray-200 outline-none flex items-center caret-gray-300"

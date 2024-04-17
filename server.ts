@@ -97,9 +97,7 @@ io.on("connection", (socket: Socket) => {
 		});
 
 		socket.on('joinChat', (id: string) => {
-			if (!io.of("/").adapter.rooms.has(id)) {
-				socket.join(id);
-			}
+			socket.join(id);
 		});
 
 		socket.on('leaveChat', async (id: string) => {
