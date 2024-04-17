@@ -12,11 +12,9 @@ ChatApp is a real-time group communication tool that allows users to create, joi
 ## Prerequisites
 
 Before you begin, ensure you have met the following requirements:
-- Node.js and npm installed (https://nodejs.org/)
+- Node.js and npm installed https://nodejs.org/
 
 ## Installation
-
-Clone the repository to your local machine:
 
 ```bash
 git clone https://github.com/yourusername/ChatApp.git
@@ -26,3 +24,4 @@ cd client
 npm i && npm build
 cd ..
 npm start
+```
