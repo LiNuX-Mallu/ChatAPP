@@ -1,4 +1,4 @@
-import { userIdAction, usernameAction } from "./actions";
+import { userAvatarAction, userIdAction, usernameAction } from "./actions";
 import initialState from "./initialState";
 import { stateType } from "./stateType";
 import { configureStore } from "@reduxjs/toolkit";
@@ -9,6 +9,8 @@ const reducer = (state: stateType = initialState, action: {type: string, payload
             return {...state, userID: action.payload};
         case usernameAction:
             return {...state, username: action.payload};
+        case userAvatarAction:
+            return {...state, userAvatar: action.payload};
         default:
             return state;
     }

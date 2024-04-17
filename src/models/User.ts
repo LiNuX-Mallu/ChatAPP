@@ -13,6 +13,10 @@ const userSchema = new Schema({
         type: String,
         required: true,
     },
+    avatar: {
+        type: String,
+        default: 'demo.jpg',
+    },
     online: {
         type: Boolean,
         default: false,

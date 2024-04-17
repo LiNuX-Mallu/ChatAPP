@@ -4,6 +4,7 @@ import registerValidation from "../middlewares/registerValidation";
 import signup from "../controllers/user/signup";
 import tokenValidation from "../middlewares/tokenValidation";
 import fetchDetails from "../controllers/user/fetchDetails";
+import updateUser from "../controllers/user/updateUser";
 
 const router = Router();
 
@@ -16,5 +17,6 @@ router.post("/logout", (_, res) => {
 router.post('/login', login);
 router.post('/signup', registerValidation, signup);
 router.get('/', tokenValidation, fetchDetails);
+router.put('/', tokenValidation, updateUser);
 
 export default router;

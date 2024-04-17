@@ -12,6 +12,7 @@ interface Props {
     createChat: React.Dispatch<React.SetStateAction<boolean>>;
     selected: React.Dispatch<React.SetStateAction<string | null>>;
     setChats: React.Dispatch<React.SetStateAction<Chat[]>>;
+    setUpdateUser: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 const colorPicker = (name: string, colors = color) => {
@@ -19,7 +20,7 @@ const colorPicker = (name: string, colors = color) => {
     return colors[index];
 }
 
-export default function Sidebar({chats, createChat, selected, setChats}: Props) {
+export default function Sidebar({chats, createChat, selected, setChats, setUpdateUser}: Props) {
     const username = useSelector((state: stateType) => state.username);
     const userID = useSelector((state: stateType) => state.userID);
 
@@ -94,7 +95,7 @@ export default function Sidebar({chats, createChat, selected, setChats}: Props) 
             <div className="bg-gray-800 z-50 absolute flex w-full flex-col p-1 items-center justify-between gap-5 pt-5 pb-2">
 
                 {/* username and logout option */}
-                <div className="flex ps-2 pe-2 w-full justify-between items-center gap-1 font-medium cursor-pointer">
+                <div onClick={() => setUpdateUser(true)} className="flex ps-2 pe-2 w-full justify-between items-center gap-1 font-medium cursor-pointer">
                     <div className="flex gap-2 items-center">
                         <span className="border border-gray-500 w-8 h-8 rounded-full bg-black"></span>
                         <span>{username ? username : 'Username'}</span>
