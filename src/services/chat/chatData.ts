@@ -6,11 +6,15 @@ export default async (chatID: string) => {
         .populate({
             path: 'createdBy',
             model: 'User',
-            select: 'username',
+            select: 'username avatar',
         }).populate({
             path: 'members.memberID',
             model: 'User',
-            select: 'online'
+            select: 'online avatar username'
+        }).populate({
+            path: 'messages.sender',
+            model: 'User',
+            select: 'online avatar username'
         });
         if (chat) {
             return chat;

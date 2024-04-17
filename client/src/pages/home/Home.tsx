@@ -61,7 +61,7 @@ export default function Home() {
             <div className="text-white select-none bg-slate-200 w-[100%] h-[100vh] overflow-scroll flex">
 
                 <div className={`${chatOpen !== null ? 'hidden': 'block'} md:block relative overflow-hidden w-full h-[100vh] md:w-1/3 border-r-2 border-gray-600`}>
-                    <Sidebar setUpdateUser={setUpdateUser} setChats={setChats} selected={setChatOpen} createChat={setCreateChat} chats={chats} />
+                    <Sidebar setChatOpen={setChatOpen} setUpdateUser={setUpdateUser} setChats={setChats} selected={setChatOpen} createChat={setCreateChat} chats={chats} />
                 </div>
                 
                 <div className={`${chatOpen !== null ? 'block' : 'hidden'} w-full h-full bg-gray-700 md:block relative`}>

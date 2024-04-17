@@ -7,7 +7,7 @@ export default async (chatID: string, timestamp: Date, userID: string) => {
             $pull: {
                 messages: {
                     timestamp: {$eq: timestamp},
-                    'sender.id': userID,
+                    sender: userID,
                 }
             }
         }, {new: true}));

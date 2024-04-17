@@ -61,13 +61,8 @@ export default function Avatar({setUpdateUser}: Props) {
                 }} className={`text-slate-400 absolute right-24 text-4xl fa-solid fa-angle-right ${avatars[avatarIndex + 1] ? 'hover:scale-110 hover:text-white cursor-pointer' : 'cursor-not-allowed'}`}></i>
 
                 <div className="rounded-full overflow-hidden h-24 w-24 border">
-                    <img 
-                        style={{
-                            imageRendering: 'crisp-edges',
-                            imageOrientation: "from-image",
-                            imageResolution: "from-image",
-                        }} 
-                        className="object-cover w-full h-full object-center" src={'/avatars/'+newAvatar} 
+                    <img
+                        className="avatar-image" src={'/avatars/'+newAvatar} 
                         alt="avatar" 
                     />
                 </div>

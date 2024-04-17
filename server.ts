@@ -8,9 +8,9 @@ import { Server, Socket } from "socket.io";
 import http from "http";
 import path from "path";
 import { Message } from "./src/interfaces/Message";
-import saveMessage from "./src/services/chat/saveMessage";
 import deleteMessage from "./src/services/chat/deleteMessage";
 import setOnline from "./src/services/user/setOnline";
+import saveUserMessage from "./src/services/chat/saveMessage";
 
 //env variables
 dotenv.config();
@@ -107,9 +107,15 @@ io.on("connection", (socket: Socket) => {
 		});
 		
 		//send message
-		socket.on('sendMessage', (data: {chatID: string, message: Message}) => {
+		socket.on('sendMessage', (data: {chatID: string, message: any}) => {
 			io.to(data.chatID).emit('receiveMessage', data.message);
-			saveMessage(data.chatID, data.message);
+			const saveMessage: Message = {
+				sender: data.message.sender._id,
+				message: data.message.message,
+				timestamp: data.message.timestamp,
+				messageType: data.message.messageType,
+			}
+			saveUserMessage(data.chatID, saveMessage);
 		});
 
 		//unsend message

@@ -12,7 +12,8 @@ interface Props {
     createChat: React.Dispatch<React.SetStateAction<boolean>>;
     selected: React.Dispatch<React.SetStateAction<string | null>>;
     setChats: React.Dispatch<React.SetStateAction<Chat[]>>;
-    setUpdateUser: React.Dispatch<React.SetStateAction<boolean>>
+    setUpdateUser: React.Dispatch<React.SetStateAction<boolean>>;
+    setChatOpen: React.Dispatch<React.SetStateAction<string | null>>;
 }
 
 const colorPicker = (name: string, colors = color) => {
@@ -20,9 +21,10 @@ const colorPicker = (name: string, colors = color) => {
     return colors[index];
 }
 
-export default function Sidebar({chats, createChat, selected, setChats, setUpdateUser}: Props) {
+export default function Sidebar({chats, createChat, selected, setChats, setUpdateUser, setChatOpen}: Props) {
     const username = useSelector((state: stateType) => state.username);
     const userID = useSelector((state: stateType) => state.userID);
+    const userAvatar = useSelector((state: stateType) => state.userAvatar) ?? 'demo.jpg';
 
     const [searchChats, setSearchChats] = useState<Chat[]>([]);
     const [search, setSearch] = useState("");
@@ -83,6 +85,7 @@ export default function Sidebar({chats, createChat, selected, setChats, setUpdat
             const newChats = [...chats].filter((chat) => chat._id !== id);
             setChats(newChats);
             setShowOptions(null);
+            setChatOpen(null);
         });
     }
 
@@ -97,7 +100,9 @@ export default function Sidebar({chats, createChat, selected, setChats, setUpdat
                 {/* username and logout option */}
                 <div onClick={() => setUpdateUser(true)} className="flex ps-2 pe-2 w-full justify-between items-center gap-1 font-medium cursor-pointer">
                     <div className="flex gap-2 items-center">
-                        <span className="border border-gray-500 w-8 h-8 rounded-full bg-black"></span>
+                        <div className="border overflow-hidden border-gray-500 w-8 h-8 rounded-full bg-black">
+                            <img style={{height: 'auto'}} className="avatar-image" src={"/avatars/"+userAvatar} alt="" />
+                        </div>
                         <span>{username ? username : 'Username'}</span>
                     </div>
                     

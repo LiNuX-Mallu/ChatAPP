@@ -1,5 +1,7 @@
+import { Schema } from "mongoose";
+
 export interface Message {
-    sender: {username: string, id: string};
+    sender: Schema.Types.ObjectId;
     messageType: string;
     message: string;
     timestamp: Date;

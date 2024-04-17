@@ -5,7 +5,6 @@ export default async (req: Request, res: Response) => {
     try {
         const {userID} = req;
         const {username, avatar} = req.body;
-        console.log(userID, username, avatar)
         const updatedUser = await manageUpdate(username, userID, avatar);
         if (updatedUser !== 400 && updatedUser !== null) {
             return res.status(200).json(updatedUser);

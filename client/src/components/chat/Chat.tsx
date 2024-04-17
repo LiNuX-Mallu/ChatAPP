@@ -30,6 +30,7 @@ export default function Chat({chatID, socket, setChatOpen}: Props) {
 
     const userID = useSelector((state: stateType) => state.userID);
     const username = useSelector((state: stateType) => state.username);
+    const userAvatar = useSelector((state: stateType) => state.userAvatar) ?? 'demo.png';
 
     const chatRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
@@ -79,7 +80,8 @@ export default function Chat({chatID, socket, setChatOpen}: Props) {
 
     //receive message function
     const receiveMessage = useCallback((message: Message) => {
-        if (message.sender.id !== userID) {
+        console.log(message)
+        if (message.sender?._id !== userID) {
             setMessages((pre) => [...pre, message]);
         }
     }, [userID]);
@@ -126,17 +128,19 @@ export default function Chat({chatID, socket, setChatOpen}: Props) {
         if (input.trim().length === 0) return undefined;
         if (userID === null || username === null || !socket || !chat) return undefined;
         const message: Message = {
-            sender: {username: username, id: userID},
+            sender: {username: username, _id: userID, avatar: userAvatar},
             message: input,
             timestamp: new Date(),
             messageType: 'text',
         }
         setMessages([...messages, message]);
+        
         socket.emit('sendMessage', {chatID: chat?._id, message});
         setInput("");
         inputRef.current && inputRef.current.focus();
     }
 
+    //leave char handler
     const handleLeaveChat = () => {
         if (!userID || !chatID) return undefined;
         axios.post('/chat/leave', {chatID, userID}, {
@@ -148,6 +152,7 @@ export default function Chat({chatID, socket, setChatOpen}: Props) {
         });
     }
 
+    //message unsend handler
     const handleUnsend = (timestamp: Date) => {
         if (!userID || !chatID) return;
         socket.emit('sendUnsend', {timestamp, userID, chatID});
@@ -213,27 +218,23 @@ export default function Chat({chatID, socket, setChatOpen}: Props) {
                             key={message.timestamp.toString()}
                             onContextMenu={(e) => {
                                 e.preventDefault();
-                                if(message.sender.id === userID) {
+                                if(message.sender?._id === userID) {
                                     setMessageOption(message.timestamp.toString());
                                 }
                             }}
-                            className={`flex relative gap-2 ${message.sender.id === userID ? 'self-end': 'self-start'}`}
+                            className={`flex relative gap-2 ${message.sender?._id === userID ? 'self-end': 'self-start'}`}
                         >
 
-                            {/* profile icon */}
-                            {message.sender.id !== userID &&
-                            <span 
-                                style={{backgroundColor: colorPicker(message.sender.username ?? 'c2')}}
-                                className={`relative rounded-full uppercase h-7 w-7 flex justify-center items-center text-center font-semibold text-sm`}
-                                >
-                                {message.sender.username[0] ?? ''}
+                            {/* UI for online status */}
+                            {message.sender?._id !== userID && (online[message.sender._id] && online[message.sender?._id] === true) &&
+                                <div className="absolute -top-2 -left-2 z-30 w-4 h-4 bg-green-500 border-2 rounded-full"></div>
+                            }
 
-                                {/* UI for online status */}
-                                {
-                                    (online[message.sender.id] && online[message.sender.id] === true) && 
-                                    <div className="absolute -top-1 -left-1 w-4 h-4 bg-green-500 rounded-full"></div>
-                                }
-                            </span>
+                            {/* avatar icon */}
+                            {message.sender?._id !== userID &&
+                            <div className={`relative overflow-hidden rounded-full uppercase h-8 w-8 flex justify-center items-center text-center font-semibold text-sm`}>
+                                <img className="avatar-image" src={'/avatars/'+message.sender?.avatar} alt="profile" />
+                            </div>
                             }
 
                             {/* unsend button */}
@@ -246,7 +247,7 @@ export default function Chat({chatID, socket, setChatOpen}: Props) {
                             {/* message container */}
                             <div
                                 className={`
-                                    ${message.sender.id === userID ?
+                                    ${message.sender._id === userID ?
                                         (messageOption === message.timestamp.toString() ? 'bg-sky-700' : 'bg-gray-800')
                                         :
                                         'bg-slate-800'}
@@ -256,13 +257,13 @@ export default function Chat({chatID, socket, setChatOpen}: Props) {
                                 >
 
                                 {/* username */}
-                                {message.sender.id !== userID && <span className="w-full text-sm p-2 pt-1 text-slate-300">{message.sender.username}</span>}
+                                {message.sender?._id !== userID && <span className="w-full text-sm p-2 pt-1 text-slate-300">{message.sender.username}</span>}
 
                                 {/* message */}
-                                <p className={`${message.sender.id === userID ? 'text-gray-100' : 'text-slate-200'} max-w-96 whitespace-break-spaces capitalize font-[Lexend] break-words ps-2 pe-2 pt-1 text-left text-sm`}>
+                                <p className={`${message.sender?._id === userID ? 'text-gray-100' : 'text-slate-200'} max-w-96 whitespace-break-spaces capitalize font-[Lexend] break-words ps-2 pe-2 pt-1 text-left text-sm`}>
                                     {message?.message ?? ""}
                                 </p>
-                                <span className={`${message.sender.id === userID ? 'text-gray-400' : 'text-slate-200'} font-light text-right p-1 pe-2 ps-2 text-xs`}>
+                                <span className={`${message.sender?._id === userID ? 'text-gray-400' : 'text-slate-200'} font-light text-right p-1 pe-2 ps-2 text-xs`}>
                                     {new Date(message.timestamp).toLocaleTimeString().toLocaleLowerCase()}
                                 </span>
                             </div>
