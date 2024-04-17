@@ -8,7 +8,7 @@ export interface Chat {
     createdAt: Date;
     members: [
         {
-            memberID: string;
+            memberID: {online: boolean, _id: string};
             joinedOn: Date;
             isAdmin: boolean;
         }

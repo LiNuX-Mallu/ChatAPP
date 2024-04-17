@@ -26,6 +26,7 @@ export default function Chat({chatID, socket, setChatOpen}: Props) {
     const [isTyping, setIsTyping] = useState<string | null>(null);
     const [showOptions, setShowOption] = useState(false);
     const [messageOption, setMessageOption] = useState<string | null>(null);
+    const [online, setOnline] = useState<{[key: string]: boolean}>({});
 
     const userID = useSelector((state: stateType) => state.userID);
     const username = useSelector((state: stateType) => state.username);
@@ -38,13 +39,26 @@ export default function Chat({chatID, socket, setChatOpen}: Props) {
         setMessages([]);
         axios.get('/chat/get/'+chatID)
         .then((res) => {
+            const data: ChatInterface = res.data;
             setChat(res.data);
-            setMessages(res.data.messages);
+            setMessages(data.messages);
+
+            // fetching online status
+            const obj:{[key: string]: boolean} = {};
+            data.members.forEach((member) => obj[member.memberID._id] = member.memberID.online ?? false);
+            setOnline(obj)
         });
         return () => {
             setMessages([]);
         }
     }, [chatID]);
+
+    //receive online status function
+    const receiveOnline = useCallback((data: {userID: string, isOnline: boolean}) => {
+        setOnline((pre) => {
+            return {...pre, [data.userID]: data.isOnline}
+        })
+    }, []);
 
     //receive typing status function
     const receiveTyping = useCallback((data: {username: string, isTyping: boolean}) => {
@@ -77,14 +91,16 @@ export default function Chat({chatID, socket, setChatOpen}: Props) {
             socket.on('receiveMessage', receiveMessage);
             socket.on('receiveTyping', receiveTyping);
             socket.on('receiveUnsend', receiveUnsend);
+            socket.on('receiveOnline', receiveOnline);
         }
         return () => {
             socket.emit('leaveChat', chat?._id);
             socket.off('receiveMessage', receiveMessage);
             socket.off('receiveTyping', receiveTyping);
             socket.off('receiveUnsend', receiveUnsend);
+            socket.off('receiveOnline', receiveOnline);
         }
-    }, [socket, chat, userID, receiveTyping, receiveUnsend, receiveMessage]);
+    }, [socket, chat, userID, receiveTyping, receiveUnsend, receiveMessage, receiveOnline]);
 
     //scroll down
     useEffect(() => {
@@ -208,9 +224,15 @@ export default function Chat({chatID, socket, setChatOpen}: Props) {
                             {message.sender.id !== userID &&
                             <span 
                                 style={{backgroundColor: colorPicker(message.sender.username ?? 'c2')}}
-                                className="rounded-full uppercase h-7 w-7 flex justify-center items-center text-center font-semibold text-sm"
+                                className={`relative rounded-full uppercase h-7 w-7 flex justify-center items-center text-center font-semibold text-sm`}
                                 >
                                 {message.sender.username[0] ?? ''}
+
+                                {/* UI for online status */}
+                                {
+                                    (online[message.sender.id] && online[message.sender.id] === true) && 
+                                    <div className="absolute -top-1 -left-1 w-4 h-4 bg-green-500 rounded-full"></div>
+                                }
                             </span>
                             }
 

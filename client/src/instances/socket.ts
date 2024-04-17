@@ -1,5 +1,5 @@
 import { io } from "socket.io-client";
-import { server } from "../constants/urls";
+const server = import.meta.env.VITE_SERVER_URL;
 
 export default io(server, {
   autoConnect: false,
