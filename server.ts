@@ -21,7 +21,7 @@ const app = express();
 const allowedOrigins = [
 	`http://${HOST}:${PORT}`,
 	`http://${CLIENT}`,
-	`https://${DOMAIN}`,
+	 DOMAIN,
 ];
 
 //cors configurations
