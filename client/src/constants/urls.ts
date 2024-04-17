@@ -1,2 +1,4 @@
-export const server = import.meta.env.VITE_SERVER_URL ?? "https://chatapp-wlohst6uqa-de.a.run.app";
+export const server = import.meta?.env?.VITE_ENV_MOD === "DEV" ? 
+    import.meta.env.VITE_SERVER_URL : "https://chatapp-wlohst6uqa-de.a.run.app"
+
 export const api = `${server}/api`;
