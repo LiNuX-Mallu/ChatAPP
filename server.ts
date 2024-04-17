@@ -10,6 +10,7 @@ import path from "path";
 import { Message } from "./src/interfaces/Message";
 import saveMessage from "./src/services/chat/saveMessage";
 import deleteMessage from "./src/services/chat/deleteMessage";
+import setOnline from "./src/services/user/setOnline";
 
 //env variables
 dotenv.config();
@@ -75,13 +76,24 @@ const io = new Server(server, {
 //scoket io logics
 io.on("connection", (socket: Socket) => {
 	try {
-		socket.on("joinApp", (id: string) => {
-			if (!io.of("/").adapter.rooms.has(id)) {
-				socket.join(id);
-			}
+		socket.on("joinApp", async (id: string) => {
+			socket.join(id);
+
+			//sending online status to every group
+			const user = await setOnline(id, true);
+			user?.chats.forEach((chat) => {
+				io.to(chat.toString()).emit('receiveOnline', {userID: user._id, isOnline: true});
+			});
 		});
-		socket.on("leaveApp", (id: string) => {
+
+		socket.on("leaveApp", async (id: string) => {
 			socket.leave(id);
+
+			//sending online status to every group
+			const user = await setOnline(id, false);
+			user?.chats.forEach((chat) => {
+				io.to(chat.toString()).emit('receiveOnline', {userID: user._id, isOnline: false});
+			});
 		});
 
 		socket.on('joinChat', (id: string) => {
@@ -89,8 +101,9 @@ io.on("connection", (socket: Socket) => {
 				socket.join(id);
 			}
 		});
-		socket.on('leaveChat', (id: string) => {
-			socket.join(id);
+
+		socket.on('leaveChat', async (id: string) => {
+			socket.leave(id);
 		});
 		
 		//send message
@@ -100,7 +113,7 @@ io.on("connection", (socket: Socket) => {
 		});
 
 		//unsend message
-		socket.on('sendUnsend', (data: {chatID: string, timestamp: Date, userID: string}) => {
+		socket.on('sendUnsend', async (data: {chatID: string, timestamp: Date, userID: string}) => {
 			io.to(data.chatID).emit('receiveUnsend', {userID: data.userID, timestamp: data.timestamp});
 			deleteMessage(data.chatID, data.timestamp, data.userID);
 		})

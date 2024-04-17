@@ -13,6 +13,10 @@ const userSchema = new Schema({
         type: String,
         required: true,
     },
+    online: {
+        type: Boolean,
+        default: false,
+    },
     chats: [
         {
             type: Schema.Types.ObjectId,

@@ -7,6 +7,10 @@ export default async (chatID: string) => {
             path: 'createdBy',
             model: 'User',
             select: 'username',
+        }).populate({
+            path: 'members.memberID',
+            model: 'User',
+            select: 'online'
         });
         if (chat) {
             return chat;
