@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Sidebar from "../../components/home/Sidebar";
 import { Chat } from "../../interfaces/Chat";
 import CreateChat from "../../components/home/CreateChat";
@@ -45,14 +45,20 @@ export default function Home() {
         })
     }, [dispatch, navigate]);
 
+    const beforeUnloader = useCallback(() => {
+        socket.emit('leaveApp', userID);
+    }, [userID, socket]);
+
     useEffect(() => {
         if (socket && userID) {
             socket.emit('joinApp', userID);
+            window.addEventListener('beforeunload', beforeUnloader)
         }
         return () => {
             socket.emit('leaveApp', userID);
+            window.removeEventListener('beforeunload', beforeUnloader)
         }
-    }, [socket, userID])
+    }, [socket, userID, beforeUnloader])
 
     return (
         <div onClick={() => {
